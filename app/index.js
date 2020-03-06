@@ -1,12 +1,11 @@
 import document from "document";
 import clock from "clock";
 import { battery } from "power";
-import { preferences } from "user-settings";
+import { preferences, units } from "user-settings";
 import { goals, today } from "user-activity";
 import { HeartRateSensor } from "heart-rate";
-import { units } from "user-settings";
 import * as messaging from "messaging";
-import { geolocation } from "geolocation";
+
 
 let time = document.getElementById("time")
 let power = document.getElementById("power")

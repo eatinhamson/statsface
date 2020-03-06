@@ -1,4 +1,6 @@
 import * as messaging from "messaging";
+import { preferences, units } from "user-settings";
+import { geolocation } from "geolocation";
 
 console.log("Companion Started");
 
