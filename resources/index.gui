@@ -1,18 +1,18 @@
 <svg viewport-fill="black">
 
-  <text id="power" x="0%" y="10%" fill="white" text-anchor="left" font-size="30">[BATTERY] 100%</text>
-  <text id="steps" x="0%" y="20%" fill="white" text-anchor="left" font-size="30">[STEPS] 999,999 / 999,999</text>
-  <text id="heartRate" x="0%" y="30%" fill="white" text-anchor="left" font-size="30">[HRT RATE] 140</text>
-  <text id="sleepTime" x="0%" y="40%" fill="white" text-anchor="left" font-size="30">[SLP] 07:50:00</text>
-  <text id="calories" x="0%" y="50%" fill="white" text-anchor="left" font-size="30">[CALS] 99,999 / 99,999 </text>
+  <text id="power" x="0%" y="10%" fill="white" font-size="30">[BATTERY] 100%</text>
+  <text id="steps" x="0%" y="20%" fill="white" font-size="30">[STEPS] 999,999 / 999,999</text>
+  <text id="heartRate" x="0%" y="30%" fill="white" font-size="30">[HRT RATE] 140</text>
+  <text id="sleepTime" x="0%" y="40%" fill="white" font-size="30">[S] 07:50:00</text>
+  <text id="calories" x="0%" y="50%" fill="white" font-size="30">[CALS] 99,999 / 99,999 </text>
 
-  <text id="temperature" x="0%" y="60%" fill="white" text-anchor="left" font-size="30">[WTHR] 70* Partly Cloudy</text>
+  <text id="temperature" x="0%" y="60%" fill="white" font-size="30">[WTHR] 70* Possible Drizzle and Humid </text>
   <!--
-  <text id="temperature" x="20%" y="60%" fill="white" text-anchor="left" font-size="30">70*</text>
-  <text id="condition" x="30%" y="60%" fill="white" text-anchor="left" font-size="30">Partly Cloudy</text>
+  <text id="temperature" x="20%" y="60%" fill="white"  font-size="30">70*</text>
+  <text id="condition" x="30%" y="60%" fill="white"  font-size="30">Partly Cloudy</text>
   -->
   
-  <text id="txtDate" x="0%" y="70%" fill="white" text-anchor="left" font-size="30">[DATE] THR DEC 14</text>
-  <text id="time" x="0%" y="80%" fill="white" text-anchor="left" font-size="30">[TIME] 00:00:00</text>
+  <text id="txtDate" x="0%" y="70%" fill="white" font-size="30">[DATE] THR DEC 14</text>
+  <text id="time" x="0%" y="80%" fill="white" font-size="30">[TIME] 00:00:00</text>
 
 </svg>

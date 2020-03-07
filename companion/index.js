@@ -1,27 +1,35 @@
 import * as messaging from "messaging";
 import { preferences, units } from "user-settings";
 import { geolocation } from "geolocation";
+import asap from "fitbit-asap/companion"
 
 console.log("Companion Started");
 
+let lat = '1'
+let lng = '1'
 
 
+asap.onmessage = message => {
+  console.log(message) // See you later, alligator.
+}
 
 
 // GEOLOCATION --------------------------------
 
- geolocation.getCurrentPosition(locationSuccess, locationError, {
-  timeout: 60 * 1000
-});
+function getGeo(){
+    geolocation.getCurrentPosition(locationSuccess, locationError, {
+        timeout: 60 * 1000
+      });
+}
 
 function locationSuccess(position) {
-  let latitude = position.coords.latitude
-  let longitude = position.coords.longitude
+  let lat = position.coords.latitude
+  let lng = position.coords.longitude
   console.log(
     "Latitude: " + lat,
     "Longitude: " + lng
   );
-  dailyWeather(latitude,longitude)
+  dailyWeather()
 }
 
 function locationError(){
@@ -30,11 +38,8 @@ function locationError(){
 
 
 
-
-
-
 // DAILY WEATHER ---------------------------------------------------------
-function dailyWeather(lat,lng){
+function dailyWeather(){
   let darksky = 'https://api.darksky.net/forecast/';
   let key = 'e09fb7a5c4859b3cdd54879e1b49b3c2';
   let uri = darksky + key + '/' + lat +','+ lng;
@@ -62,9 +67,10 @@ function dailyWeather(lat,lng){
             currentSummary: j.currently.summary
         }
 
-        if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
-            messaging.peerSocket.send(myData);
-        }
+        //if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+        //    messaging.peerSocket.send(myData);
+        //}
+        asap.send(myData)
     })
     .catch(err => console.log('[FETCH]: ' + err));
 }

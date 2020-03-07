@@ -5,21 +5,16 @@ import { preferences, units } from "user-settings";
 import { goals, today } from "user-activity";
 import { HeartRateSensor } from "heart-rate";
 import * as messaging from "messaging";
+import asap from "fitbit-asap/app"
 
 
 let time = document.getElementById("time")
 let power = document.getElementById("power")
 let txtDate = document.getElementById("txtDate");
 let steps = document.getElementById("steps");
-let goalsteps = document.getElementById("goalsteps");
 let heartRate = document.getElementById("heartRate")
 let calories = document.getElementById("calories")
-let caloriesGoal = document.getElementById("caloriesGoal")
 let temperature = document.getElementById("temperature");
-let condition = document.getElementById("condition");
-let location = document.getElementById("location");
-let sleepTime = document.getElementById("sleepTime");
-
 
 // CLOCK ------------------------------------------------------------------
 clock.granularity = 'seconds'; // seconds, minutes, hours
@@ -37,7 +32,7 @@ clock.ontick = function(evt) { // do the following on every tick
         hours = hours - 12;
     }
     
-    time.text = `[TIME] ${hours}:${mins.toString()}:${secs.toString()}`;
+    time.text = `[T] ${hours}:${mins.toString()}:${secs.toString()}`;
   
   
     // DATE ------------------------------------------
@@ -46,14 +41,14 @@ clock.ontick = function(evt) { // do the following on every tick
     let monthName = nameOfMonth(date.getMonth());
     let day = ("0" + date.getDate()).slice(-2);
 
-    txtDate.text = `[DATE] ${dayName} ${monthName} ${day}`;
+    txtDate.text = `[D] ${dayName} ${monthName} ${day}`;
 
   //BATTERY ------------------------------------------------------------------
-    power.text="[BATTERY] " + (Math.floor(battery.chargeLevel) + "%");
+    power.text="[B] " + (Math.floor(battery.chargeLevel) + "%");
   
   //STEPS, CALORIES ------------------------------------------
-    steps.text = (`[STEPS] ${today.local.steps || 0} / ${goals.steps || 0}`);
-    calories.text = (`[CALS] ${today.local.calories || 0} / ${goals.calories || 0}`)
+    steps.text = (`[S] ${today.local.steps || 0} / ${goals.steps || 0}`);
+    calories.text = (`[C] ${today.local.calories || 0} / ${goals.calories || 0}`)
   
 };
 
@@ -63,19 +58,22 @@ clock.ontick = function(evt) { // do the following on every tick
 if (HeartRateSensor) {
     const hrm = new HeartRateSensor();
     hrm.addEventListener("reading", () => {
-        heartRate.text = (`[HRT RATE] ${hrm.heartRate}`);
+        heartRate.text = (`[H] ${hrm.heartRate}`);
     });
     hrm.start();
  }
 
-
+/*
 // Message is received from companion
 messaging.peerSocket.onmessage = evt => {
   temperature.text = evt.data.currentTemp
   condition.text = evt.data.currentSummary
 };
+*/
 
-
+asap.onmessage = message => {
+  temperature.text = (`[W] ${message.currentTemp} ${message.currentSummary}`)
+}
 
 
 function nameOfMonth(i) {
