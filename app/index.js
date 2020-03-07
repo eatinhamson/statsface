@@ -18,16 +18,17 @@ let caloriesGoal = document.getElementById("caloriesGoal")
 let temperature = document.getElementById("temperature");
 let condition = document.getElementById("condition");
 let location = document.getElementById("location");
+let sleepTime = document.getElementById("sleepTime");
 
 
-//CLOCK ------------------------------------------------------------------
+// CLOCK ------------------------------------------------------------------
 clock.granularity = 'seconds'; // seconds, minutes, hours
-clock.ontick = function(evt) {
+clock.ontick = function(evt) { // do the following on every tick
     
     let hours=("0" + evt.date.getHours()).slice(-2)
     let mins=("0" + evt.date.getMinutes()).slice(-2)
     let secs=("0" + evt.date.getSeconds()).slice(-2)
-
+    
     if(preferences.clockDisplay === "12h" && hours == 12) {
         hours = 12;
     }
@@ -36,62 +37,37 @@ clock.ontick = function(evt) {
         hours = hours - 12;
     }
     
-    time.text = `${hours}:${mins.toString()}:${secs.toString()}`;
+    time.text = `[TIME] ${hours}:${mins.toString()}:${secs.toString()}`;
+  
+  
+    // DATE ------------------------------------------
+    let date = new Date();
+    let dayName = nameOfDay(date.getDay());
+    let monthName = nameOfMonth(date.getMonth());
+    let day = ("0" + date.getDate()).slice(-2);
+
+    txtDate.text = `[DATE] ${dayName} ${monthName} ${day}`;
+
+  //BATTERY ------------------------------------------------------------------
+    power.text="[BATTERY] " + (Math.floor(battery.chargeLevel) + "%");
+  
+  //STEPS, CALORIES ------------------------------------------
+    steps.text = (`[STEPS] ${today.local.steps || 0} / ${goals.steps || 0}`);
+    calories.text = (`[CALS] ${today.local.calories || 0} / ${goals.calories || 0}`)
+  
 };
 
-
-//DATE ------------------------------------------------------------------
-let date = new Date();
-
-let dayName = nameOfDay(date.getDay());
-let monthName = nameOfMonth(date.getMonth());
-let day = ("0" + date.getDate()).slice(-2);
-
-txtDate.text = `${dayName} ${monthName} ${day}`;
-
-//BATTERY ------------------------------------------------------------------
-power.text=(Math.floor(battery.chargeLevel) + "%");
-
-
-//STEPS, CALORIES ------------------------------------------------------------------
-function update() {
-    steps.text = today.local.steps || 0;
-    goalsteps.text= goals.steps || 0;
-    calories.text = today.local.calories || 0;
-    caloriesGoal.text = goals.calories || 0;
-}
-update();
-setInterval(update, 3000);
 
 
 //Heart Rate ------------------------------------------------------------------
 if (HeartRateSensor) {
     const hrm = new HeartRateSensor();
     hrm.addEventListener("reading", () => {
-        heartRate.text = (`Current heart rate: ${hrm.heartRate}`);
+        heartRate.text = (`[HRT RATE] ${hrm.heartRate}`);
     });
     hrm.start();
  }
 
- //LOCATION ------------------------------------------------------------------
- geolocation.getCurrentPosition(locationSuccess, locationError, {
-  timeout: 60 * 1000
-});
-
-function locationSuccess(position) {
-  let lat = position.coords.latitude
-  let lng = position.coords.longitude
-  console.log(
-    "Latitude: " + lat,
-    "Longitude: " + lng
-  );
-}
-
-function locationError(){
-  console.log('locationError')
-}
-
-// WEATHER ------------------------------------------------------------------
 
 // Message is received from companion
 messaging.peerSocket.onmessage = evt => {
