@@ -15,6 +15,7 @@ let steps = document.getElementById("steps");
 let heartRate = document.getElementById("heartRate")
 let calories = document.getElementById("calories")
 let temperature = document.getElementById("temperature");
+let sleepTime = document.getElementById("sleepTime")
 
 // CLOCK ------------------------------------------------------------------
 clock.granularity = 'seconds'; // seconds, minutes, hours
@@ -72,7 +73,16 @@ messaging.peerSocket.onmessage = evt => {
 */
 
 asap.onmessage = message => {
-  temperature.text = (`[W] ${message.currentTemp} ${message.currentSummary}`)
+
+  if (message.currentTemp){ // if temp is reported
+    message.currentTemp = Math.round(message.currentTemp)
+    temperature.text = (`[W] ${message.currentTemp} ${message.currentSummary}`)
+  }
+  
+  if (message.totalMinutesAsleep){ // if toal slept mins is reported
+    console.log(message.totalMinutesAsleep)
+    sleepTime.text = (`[S] ${message.totalMinutesAsleep}`)
+  }
 }
 
 

@@ -6,7 +6,7 @@
   <text id="sleepTime" x="0%" y="40%" fill="white" font-size="30">[S] 07:50:00</text>
   <text id="calories" x="0%" y="50%" fill="white" font-size="30">[CALS] 99,999 / 99,999 </text>
 
-  <text id="temperature" x="0%" y="60%" fill="white" font-size="30">[WTHR] 70* Possible Drizzle and Humid </text>
+  <text id="temperature" x="0%" y="60%" fill="white" font-size="30">[W] 60 Possible Drizzle and Humid </text>
   <!--
   <text id="temperature" x="20%" y="60%" fill="white"  font-size="30">70*</text>
   <text id="condition" x="30%" y="60%" fill="white"  font-size="30">Partly Cloudy</text>
