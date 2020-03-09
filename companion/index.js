@@ -2,6 +2,7 @@ import { geolocation } from "geolocation";
 import asap from "fitbit-asap/companion"
 import { settingsStorage } from "settings";
 import calendars from "calendars";
+import * as messaging from "messaging";
 
 /*
 Only hit API if watch is conected to phone, this way i am not hitting API only to clear the data
@@ -19,9 +20,8 @@ var lng
 var todayEvents
 
 asap.onmessage = message => {
-  console.log(message) // See you later, alligator.
+  console.log(message) // 
 }
-asap.send("ASAP - from companion to app")
 
 var myVar = setInterval(sendToWatch, 300000); //every 5 mins - 300000, 3 mins 180000
 function sendToWatch() {
@@ -30,6 +30,7 @@ function sendToWatch() {
     getGeo()
     fetchDailyWeather(lat,lng)
     fetchTodaysSleepData() 
+    calendars.searchEvents(eventsQuery)
 
     asap.cancel() // clear queue of all existing items, this way only the most recent data is delivered to watch
     asap.send(toAppData) // send all collected info frpm phone to watch in one batch
@@ -128,8 +129,6 @@ function fetchTodaysSleepData(accessToken)  {
     }
   }
   
-
-
 //Get calendar events
 let start = new Date()
 start.setHours(0, 0, 0, 0)
@@ -141,5 +140,5 @@ let eventsQuery = { startDate: start, endDate: end }
 calendars.searchEvents(eventsQuery).then(function() {
    todayEvents.forEach(event => {
      console.log(event.title)
-   })
+    })
 });

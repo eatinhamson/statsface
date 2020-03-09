@@ -5,6 +5,7 @@ import { preferences, units } from "user-settings";
 import { goals, today } from "user-activity";
 import { HeartRateSensor } from "heart-rate";
 import asap from "fitbit-asap/app"
+import * as messaging from "messaging";
 
 let time = document.getElementById("time")
 let power = document.getElementById("power")
@@ -15,7 +16,6 @@ let calories = document.getElementById("calories")
 let temperature = document.getElementById("temperature");
 let sleepTime = document.getElementById("sleepTime")
 
-asap.send("ASAP - from app to companion")
 
 // CLOCK ------------------------------------------------------------------
 clock.granularity = 'seconds'; // seconds, minutes, hours
