@@ -1,6 +1,7 @@
 import { geolocation } from "geolocation";
 import asap from "fitbit-asap/companion"
 import { settingsStorage } from "settings";
+import calendars from "calendars";
 
 /*
 Only hit API if watch is conected to phone, this way i am not hitting API only to clear the data
@@ -22,7 +23,7 @@ asap.onmessage = message => {
 }
 asap.send("ASAP - from companion to app")
 
-var myVar = setInterval(sendToWatch, 180000); //every 5 mins - 300000, 3 mins 180000
+var myVar = setInterval(sendToWatch, 30000); //every 5 mins - 300000, 3 mins 180000
 function sendToWatch() {
     console.log("Timer Triggered")
 
@@ -78,9 +79,22 @@ function fetchDailyWeather(lat,lng){
         toAppData.currentTemp= j.currently.temperature
         toAppData.currentSummary= j.currently.summary
     })
-    .catch(err => console.log('[FETCH]: fetchDailyWeather failed ' + err));
+    .catch(err => console.log('[FETCH]: ' + err));
 }
 
+//Get calendar events
+let start = new Date()
+start.setHours(0, 0, 0, 0)
+let end = new Date()
+end.setHours(23, 59, 59, 999)
+
+let eventsQuery = { startDate: start, endDate: end }
+
+calendars.searchEvents(eventsQuery).then(function() {
+   todayEvents.forEach(event => {
+     console.log(event.title)
+   })
+});
 
 function fetchTodaysSleepData(accessToken)  {
     console.log('fetchDailyWeather - started')
@@ -104,7 +118,7 @@ function fetchTodaysSleepData(accessToken)  {
     .then((j) =>{
         toAppData.totalMinutesAsleep= j.summary.totalMinutesAsleep
     })
-    .catch(err => console.log('[FETCH]: fetchTodaysSleepData failed - ' + err));
+    .catch(err => console.log('[FETCH]: - ' + err));
 }
 
   // A user changes Settings

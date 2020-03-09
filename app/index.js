@@ -42,7 +42,7 @@ clock.ontick = function(evt) { // do the following on every tick
     let monthName = nameOfMonth(date.getMonth());
     let day = ("0" + date.getDate()).slice(-2);
 
-    txtDate.text = `[D] ${dayName} ${monthName} ${day}`;
+    txtDate.text = `[D] ${dayName} ${day} ${monthName}`;
 
   //BATTERY ------------------------------------------------------------------
     power.text="[B] " + (Math.floor(battery.chargeLevel) + "%");
@@ -79,7 +79,6 @@ asap.onmessage = message => {
 
   if (message.totalMinutesAsleep){ // if toal slept mins is reported
     let totalMinutesAsleep= convertMinsToHrsMins(message.totalMinutesAsleep)
-    console.log(totalMinutesAsleep)
     sleepTime.text = (`[S] ${totalMinutesAsleep}`)
   }
 }
