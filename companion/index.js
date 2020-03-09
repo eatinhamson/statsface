@@ -8,7 +8,6 @@ Only hit API if watch is conected to phone, this way i am not hitting API only t
 get user settings, like units for temp
 get geo location just when needed
 time based triggers, like get sleep data at 8am, or get weather data on the 10s, or do some action each minute, and each hour
-
 */
 
 console.log("Companion Started");
@@ -17,6 +16,7 @@ var toAppData = {};  // create a global object to which data is added then sent 
 
 var lat
 var lng
+var todayEvents
 
 asap.onmessage = message => {
   console.log(message) // See you later, alligator.
@@ -82,20 +82,6 @@ function fetchDailyWeather(lat,lng){
     .catch(err => console.log('[FETCH]: ' + err));
 }
 
-//Get calendar events
-let start = new Date()
-start.setHours(0, 0, 0, 0)
-let end = new Date()
-end.setHours(23, 59, 59, 999)
-
-let eventsQuery = { startDate: start, endDate: end }
-
-calendars.searchEvents(eventsQuery).then(function() {
-   todayEvents.forEach(event => {
-     console.log(event.title)
-   })
-});
-
 function fetchTodaysSleepData(accessToken)  {
     console.log('fetchDailyWeather - started')
     let date = new Date();
@@ -142,3 +128,18 @@ function fetchTodaysSleepData(accessToken)  {
     }
   }
   
+
+
+//Get calendar events
+let start = new Date()
+start.setHours(0, 0, 0, 0)
+let end = new Date()
+end.setHours(23, 59, 59, 999)
+
+let eventsQuery = { startDate: start, endDate: end }
+
+calendars.searchEvents(eventsQuery).then(function() {
+   todayEvents.forEach(event => {
+     console.log(event.title)
+   })
+});
