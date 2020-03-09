@@ -1,10 +1,18 @@
-import * as messaging from "messaging";
-import { preferences, units } from "user-settings";
 import { geolocation } from "geolocation";
 import asap from "fitbit-asap/companion"
 import { settingsStorage } from "settings";
 
+/*
+Only hit API if watch is conected to phone, this way i am not hitting API only to clear the data
+get user settings, like units for temp
+get geo location just when needed
+time based triggers, like get sleep data at 8am, or get weather data on the 10s, or do some action each minute, and each hour
+
+*/
+
 console.log("Companion Started");
+
+var toAppData = {};  // create a global object to which data is added then sent to app
 
 var lat
 var lng
@@ -12,19 +20,25 @@ var lng
 asap.onmessage = message => {
   console.log(message) // See you later, alligator.
 }
+asap.send("ASAP - from companion to app")
 
+var myVar = setInterval(sendToWatch, 180000); //every 5 mins - 300000, 3 mins 180000
+function sendToWatch() {
+    console.log("Timer Triggered")
 
-var myVar = setInterval(myTimer, 30000); //every 5 mins - 300000
+    getGeo()
+    fetchDailyWeather(lat,lng)
+    fetchTodaysSleepData() 
 
-function myTimer() {
-    console.log("timer triggered")
-    //getGeo()
-    fetchSleepData() 
+    asap.cancel() // clear queue of all existing items, this way only the most recent data is delivered to watch
+    asap.send(toAppData) // send all collected info frpm phone to watch in one batch
 }
 
-// GEOLOCATION --------------------------------
 
+
+// GEOLOCATION --------------------------------
 function getGeo(){
+    console.log('getGeo - started')
     geolocation.getCurrentPosition(locationSuccess, locationError, {
         timeout: 60 * 1000
       });
@@ -33,54 +47,43 @@ function getGeo(){
 function locationSuccess(position) {
     lat = position.coords.latitude
     lng = position.coords.longitude
-  console.log(
-    "Latitude: " + lat,
-    "Longitude: " + lng
-  );
-  dailyWeather(lat,lng)
 }
 
 function locationError(){
-  console.log('locationError')
+  console.log('getGeo - failed. Trying again.')
+  getGeo()
 }
 
-
-
 // DAILY WEATHER ---------------------------------------------------------
-function dailyWeather(lat,lng){
-  let darksky = 'https://api.darksky.net/forecast/';
-  let key = 'e09fb7a5c4859b3cdd54879e1b49b3c2';
-  let uri = darksky + key + '/' + lat +','+ lng;
-  console.log(uri);
-  uri = uri.concat('?units=us&exclude=minutely,hourly');
-  // units - ca, si, us, uk
-  // exclude - minutely,hourly,daily,currently
+function fetchDailyWeather(lat,lng){
+    console.log('fetchDailyWeather - started')
 
-  fetch(uri)
+    let darksky = 'https://api.darksky.net/forecast/';
+    let key = 'e09fb7a5c4859b3cdd54879e1b49b3c2';
+    let uri = darksky + key + '/' + lat +','+ lng;
+    uri = uri.concat('?units=us&exclude=minutely,hourly');
+
+    // units - ca, si, us, uk
+    // exclude - minutely,hourly,daily,currently
+
+    fetch(uri)
     .then((response)=>{
         if(response.ok){
             return response.json();
         }else{
-            throw new Error('Bad HTTP!')
+            throw new Error('fetchDailyWeather failed - Bad HTTP!')
         }
     })
     .then((j) =>{
-        console.log(
-            j.currently.temperature, 
-            j.currently.summary
-            );
-
-        let myData = {
-            currentTemp: j.currently.temperature,
-            currentSummary: j.currently.summary
-        }
-        asap.send(myData)
+        toAppData.currentTemp= j.currently.temperature
+        toAppData.currentSummary= j.currently.summary
     })
-    .catch(err => console.log('[FETCH]: ' + err));
+    .catch(err => console.log('[FETCH]: fetchDailyWeather failed ' + err));
 }
 
 
-function fetchSleepData(accessToken)  {
+function fetchTodaysSleepData(accessToken)  {
+    console.log('fetchDailyWeather - started')
     let date = new Date();
     let todayDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; //YYYY-MM-DD
   
@@ -91,25 +94,25 @@ function fetchSleepData(accessToken)  {
         "Authorization": `Bearer ${accessToken}`
       }
     })
-    .then(function(res) {
-      return res.json();
+    .then((response)=>{
+        if(response.ok){
+            return response.json();
+        }else{
+            throw new Error('fetchTodaysSleepData failed - Bad HTTP!')
+        }
     })
-    .then(function(data) {
-      let myData = {
-        totalMinutesAsleep: data.summary.totalMinutesAsleep
-      }
-      asap.send(myData)
-      console.log(myData)
+    .then((j) =>{
+        toAppData.totalMinutesAsleep= j.summary.totalMinutesAsleep
     })
-    .catch(err => console.log('[FETCH]: ' + err));
-  }
-  
+    .catch(err => console.log('[FETCH]: fetchTodaysSleepData failed - ' + err));
+}
+
   // A user changes Settings
   settingsStorage.onchange = evt => {
     if (evt.key === "oauth") {
       // Settings page sent us an oAuth token
       let data = JSON.parse(evt.newValue);
-      fetchSleepData(data.access_token) ;
+      fetchTodaysSleepData(data.access_token) ;
     }
   };
   
@@ -120,7 +123,7 @@ function fetchSleepData(accessToken)  {
       if (key && key === "oauth") {
         // We already have an oauth token
         let data = JSON.parse(settingsStorage.getItem(key))
-        fetchSleepData(data.access_token);
+        fetchTodaysSleepData(data.access_token);
       }
     }
   }

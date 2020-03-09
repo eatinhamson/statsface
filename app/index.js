@@ -4,9 +4,7 @@ import { battery } from "power";
 import { preferences, units } from "user-settings";
 import { goals, today } from "user-activity";
 import { HeartRateSensor } from "heart-rate";
-import * as messaging from "messaging";
 import asap from "fitbit-asap/app"
-
 
 let time = document.getElementById("time")
 let power = document.getElementById("power")
@@ -16,6 +14,8 @@ let heartRate = document.getElementById("heartRate")
 let calories = document.getElementById("calories")
 let temperature = document.getElementById("temperature");
 let sleepTime = document.getElementById("sleepTime")
+
+asap.send("ASAP - from app to companion")
 
 // CLOCK ------------------------------------------------------------------
 clock.granularity = 'seconds'; // seconds, minutes, hours
@@ -54,7 +54,6 @@ clock.ontick = function(evt) { // do the following on every tick
 };
 
 
-
 //Heart Rate ------------------------------------------------------------------
 if (HeartRateSensor) {
     const hrm = new HeartRateSensor();
@@ -64,27 +63,26 @@ if (HeartRateSensor) {
     hrm.start();
  }
 
-/*
-// Message is received from companion
-messaging.peerSocket.onmessage = evt => {
-  temperature.text = evt.data.currentTemp
-  condition.text = evt.data.currentSummary
-};
-*/
-
 asap.onmessage = message => {
 
+  console.log(
+    'Received message from Companion',
+    message.currentTemp,
+    message.currentSummary,
+    message.totalMinutesAsleep
+  );
+
   if (message.currentTemp){ // if temp is reported
-    message.currentTemp = Math.round(message.currentTemp)
-    temperature.text = (`[W] ${message.currentTemp} ${message.currentSummary}`)
+    let currentTemp = Math.round(message.currentTemp)
+    temperature.text = (`[W] ${currentTemp} ${message.currentSummary}`)
   }
-  
+
   if (message.totalMinutesAsleep){ // if toal slept mins is reported
-    console.log(message.totalMinutesAsleep)
-    sleepTime.text = (`[S] ${message.totalMinutesAsleep}`)
+    let totalMinutesAsleep= convertMinsToHrsMins(message.totalMinutesAsleep)
+    console.log(totalMinutesAsleep)
+    sleepTime.text = (`[S] ${totalMinutesAsleep}`)
   }
 }
-
 
 function nameOfMonth(i) {
     switch(i) {
@@ -133,4 +131,13 @@ function nameOfMonth(i) {
       case 6:
         return "SAT";
     }
+  }
+
+
+  function convertMinsToHrsMins(mins) {
+    let h = Math.floor(mins / 60);
+    let m = mins % 60;
+    h = h < 10 ? '0' + h : h;
+    m = m < 10 ? '0' + m : m;
+    return `${h}:${m}`;
   }
