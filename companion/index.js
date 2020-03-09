@@ -23,7 +23,7 @@ asap.onmessage = message => {
 }
 asap.send("ASAP - from companion to app")
 
-var myVar = setInterval(sendToWatch, 30000); //every 5 mins - 300000, 3 mins 180000
+var myVar = setInterval(sendToWatch, 300000); //every 5 mins - 300000, 3 mins 180000
 function sendToWatch() {
     console.log("Timer Triggered")
 
