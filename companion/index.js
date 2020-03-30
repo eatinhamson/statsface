@@ -11,6 +11,15 @@ get geo location just when needed
 time based triggers, like get sleep data at 8am, or get weather data on the 10s, or do some action each minute, and each hour
 */
 
+/*
+check if watch is conencted to phone
+    send message form companion to app
+    send message form app to companion
+     if fails, wait 10 sec and try again
+     count 10 secs to 
+if it is, update data
+
+*/
 console.log("Companion Started");
 
 var toAppData = {};  // create a global object to which data is added then sent to app
@@ -25,7 +34,8 @@ asap.onmessage = message => {
 
 var myVar = setInterval(sendToWatch, 300000); //every 5 mins - 300000, 3 mins 180000
 function sendToWatch() {
-    console.log("Timer Triggered")
+    
+  console.log("Timer Triggered")
 
     getGeo()
     fetchDailyWeather(lat,lng)

@@ -1,3 +1,20 @@
 * {
   font:Colfax-Light
 }
+
+.foregroundProgressBar{
+  align-items: center;
+  stroke:black;
+}
+
+.backgroundProgressBar{
+  align-items: center;
+  opacity: 0.4;
+  fill:grey;
+  stroke:black;
+  stroke-width:1;
+}
+
+.batteryGroup{
+  margin:auto;
+}
