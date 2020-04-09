@@ -2,19 +2,32 @@
   font:Colfax-Light
 }
 
-.foregroundProgressBar{
-  align-items: center;
-  stroke:black;
+.screen { 
+  width: 100%; 
+  height: 100%; 
+  viewport-fill: black;
 }
 
-.backgroundProgressBar{
-  align-items: center;
+.bgb {
   opacity: 0.4;
   fill:grey;
-  stroke:black;
-  stroke-width:1;
+  width: 100%-10; 
+  height: 12%; 
+  x: 5; 
+  y: $+5; 
 }
 
-.batteryGroup{
-  margin:auto;
+.fgb { 
+  width: 90%-10; 
+  height: 12%; 
+  x: 5; 
+  y: $+5; 
+}
+
+.bt {
+  fill: black;
+  width: 100%-10; 
+  height: 12%; 
+  x: 5; 
+  y: $+5; 
 }

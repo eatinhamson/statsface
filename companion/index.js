@@ -20,32 +20,23 @@ check if watch is conencted to phone
 if it is, update data
 
 */
-console.log("Companion Started");
 
-var toAppData = {};  // create a global object to which data is added then sent to app
 
-var lat
-var lng
-var todayEvents
+var weatherArray = []; // create global weather object
+
 
 asap.onmessage = message => {
-  console.log(message) // 
-}
 
-var myVar = setInterval(sendToWatch, 300000); //every 5 mins - 300000, 3 mins 180000
-function sendToWatch() {
-    
-  console.log("Timer Triggered")
+  console.log('From App to Comp: ' + message);
 
+  if (message == 'weather'){ // if weather is requested
     getGeo()
-    fetchDailyWeather(lat,lng)
-    fetchTodaysSleepData() 
-    calendars.searchEvents(eventsQuery)
+  }
 
-    asap.cancel() // clear queue of all existing items, this way only the most recent data is delivered to watch
-    asap.send(toAppData) // send all collected info frpm phone to watch in one batch
+  if (message == 'sleepData'){ // if toal slept mins is reported
+
+  }
 }
-
 
 
 // GEOLOCATION --------------------------------
@@ -59,16 +50,15 @@ function getGeo(){
 function locationSuccess(position) {
     lat = position.coords.latitude
     lng = position.coords.longitude
+    fetchDailyWeather(lat,lng)
 }
 
 function locationError(){
   console.log('getGeo - failed. Trying again.')
-  getGeo()
 }
 
 // DAILY WEATHER ---------------------------------------------------------
 function fetchDailyWeather(lat,lng){
-    console.log('fetchDailyWeather - started')
 
     let darksky = 'https://api.darksky.net/forecast/';
     let key = 'e09fb7a5c4859b3cdd54879e1b49b3c2';
@@ -87,11 +77,18 @@ function fetchDailyWeather(lat,lng){
         }
     })
     .then((j) =>{
-        toAppData.currentTemp= j.currently.temperature
-        toAppData.currentSummary= j.currently.summary
+      weatherArray.currentTemp= j.currently.temperature
+      weatherArray.currentSummary= j.currently.summary
+      asap.send(weatherArray)
     })
     .catch(err => console.log('[FETCH]: ' + err));
 }
+
+
+
+
+
+
 
 function fetchTodaysSleepData(accessToken)  {
     console.log('fetchDailyWeather - started')

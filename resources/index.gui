@@ -1,27 +1,33 @@
-<svg viewport-fill="black">
+<svg class="screen">
 
-<g>
-  <rect id="batteryBarBG" class ="backgroundProgressBar" x="5" y="2" rx="20" ry="20" width="90%" height="35" />
-  <rect id="batteryBarFG" class ="foregroundProgressBar" x="5" y="2" rx="20" ry="20" width="70%" height="35" fill="orangered"/>
-  <text id="power" x="10" y="30" fill="white" font-size="30">[B] Loading .......... </text>
-</g>
+  <svg class="container">
+    <rect class="bgb"/>
+    <rect class="bgb"/>
+    <rect class="bgb"/>
+    <rect class="bgb"/>
+    <rect class="bgb"/>
+    <rect class="bgb"/>
+    <rect class="bgb"/>
+  </svg>
 
-<g>
-  <rect id="stepsBarBG" class ="backgroundProgressBar" x="5" y="42" rx="20" ry="20" width="1000" height="35"/>
-  <rect id="stepsBarFG" class ="foregroundProgressBar" x="5" y="42" rx="20" ry="20" width="30" height="35" fill="orange"/>
-  <text id="steps" x="10" y="73" fill="white" font-size="30">[S] Loading ..............................</text>
-</g>
+  <svg class="container">
+    <rect id="batteryFGB" class="fgb" fill="red" />
+    <rect id="stepsFGB" class="fgb" fill="tomato" />
+    <rect id="heartrateFGB" class="fgb" fill="orange" />
+    <rect id="sleepFGB" class="fgb" fill="gold" />
+    <rect id="weatherFGB" class="fgb" fill="yellow" />
+    <rect id="dateFGB" class="fgb" fill="orangered" />
+    <rect id="timeFGB" class="fgb" fill="goldenrod" />
+  </svg>
 
-<g>
-  <rect id="heartrateBarBG" class ="backgroundProgressBar" x="5" y="84" rx="20" ry="20" width="1000" height="35"/>
-  <rect id="heartrateBarFG" class ="foregroundProgressBar" x="5" y="84" rx="20" ry="20" width="30" height="35" fill="gold"/>
-  <text id="heartRate" x="10" y="115" fill="white" font-size="30">[H] Loading ...............................</text>
-</g>
-
-  <text id="sleepTime" x="0%" y="50%" fill="white" font-size="30">[S] Loading ..............................</text>
-  <text id="calories" x="0%" y="60%" fill="white" font-size="30">[C] Loading ..............................</text>
-  <text id="temperature" x="0%" y="70%" fill="white" font-size="30">[W] Loading ..............................</text>
-  <text id="txtDate" x="0%" y="80%" fill="white" font-size="30">[D] Loading ..............................</text>
-  <text id="time" x="0%" y="90%" fill="white" font-size="30">[T] Loading ..............................</text>
+  <svg class="container">
+    <text id="battery" class="bt" y="32">Loading ...............................</text>
+    <text id="steps" class="bt">Loading ...............................</text>
+    <text id="heartrate" class="bt">Loading ...............................</text>
+    <text id="sleep" class="bt">Loading ...............................</text>
+    <text id="weather" class="bt">Loading ...............................</text>
+    <text id="date" class="bt">Loading ...............................</text>
+    <text id="time" class="bt">Loading ...............................</text>
+  </svg>
 
 </svg>
