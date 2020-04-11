@@ -22,9 +22,6 @@ if it is, update data
 */
 
 
-var weatherArray = []; // create global weather object
-
-
 asap.onmessage = message => {
 
   console.log('From App to Comp: ' + message);
@@ -33,37 +30,32 @@ asap.onmessage = message => {
     getGeo()
   }
 
-  if (message == 'sleepData'){ // if toal slept mins is reported
-
+  if (message == 'sleep'){ // if toal slept mins is reported
+    restoreSettings()
   }
 }
 
 
 // GEOLOCATION --------------------------------
 function getGeo(){
-    console.log('getGeo - started')
-    geolocation.getCurrentPosition(locationSuccess, locationError, {
+    geolocation.getCurrentPosition(fetchDailyWeather, locationError, {
         timeout: 60 * 1000
       });
 }
-
-function locationSuccess(position) {
-    lat = position.coords.latitude
-    lng = position.coords.longitude
-    fetchDailyWeather(lat,lng)
-}
-
 function locationError(){
-  console.log('getGeo - failed. Trying again.')
+  console.log('failed to get position')
 }
 
 // DAILY WEATHER ---------------------------------------------------------
-function fetchDailyWeather(lat,lng){
+function fetchDailyWeather(position){
+
+    let lat = position.coords.latitude
+    let lng = position.coords.longitude
 
     let darksky = 'https://api.darksky.net/forecast/';
     let key = 'e09fb7a5c4859b3cdd54879e1b49b3c2';
     let uri = darksky + key + '/' + lat +','+ lng;
-    uri = uri.concat('?units=us&exclude=minutely,hourly');
+    uri = uri.concat('?units=us&');
 
     // units - ca, si, us, uk
     // exclude - minutely,hourly,daily,currently
@@ -77,8 +69,20 @@ function fetchDailyWeather(lat,lng){
         }
     })
     .then((j) =>{
+      var weatherArray = {}; // create weather object
+
       weatherArray.currentTemp= j.currently.temperature
       weatherArray.currentSummary= j.currently.summary
+
+      console.log (
+        j.daily.data.temperatureHigh
+      )
+      /*
+      weatherArray.temperatureHigh= j.daily.temperatureHigh
+      weatherArray.temperatureLow= j.daily.temperatureLow
+      weatherArray.sunriseTime= j.daily.sunriseTime
+      weatherArray.sunsetTime= j.daily.sunsetTime
+*/
       asap.send(weatherArray)
     })
     .catch(err => console.log('[FETCH]: ' + err));
@@ -110,7 +114,11 @@ function fetchTodaysSleepData(accessToken)  {
         }
     })
     .then((j) =>{
-        toAppData.totalMinutesAsleep= j.summary.totalMinutesAsleep
+      var sleepData = {};  //create sleepData object 
+      
+      sleepData.totalMinutesAsleep= j.summary.totalMinutesAsleep
+
+      asap.send(sleepData)
     })
     .catch(err => console.log('[FETCH]: - ' + err));
 }

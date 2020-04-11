@@ -1,33 +1,44 @@
 <svg class="screen">
 
   <svg class="container">
-    <rect class="bgb"/>
-    <rect class="bgb"/>
-    <rect class="bgb"/>
-    <rect class="bgb"/>
-    <rect class="bgb"/>
-    <rect class="bgb"/>
-    <rect class="bgb"/>
+    <rect class="bgb bg1"/>
+    <rect class="bgb bg2"/>
+    <rect class="bgb bg3"/>
+    <rect class="bgb bg4"/>
+    <rect class="bgb bg5"/>
+    <rect class="bgb bg6"/>
+    <rect class="bgb bg7"/>
   </svg>
 
   <svg class="container">
-    <rect id="batteryFGB" class="fgb" fill="red" />
-    <rect id="stepsFGB" class="fgb" fill="tomato" />
-    <rect id="heartrateFGB" class="fgb" fill="orange" />
-    <rect id="sleepFGB" class="fgb" fill="gold" />
-    <rect id="weatherFGB" class="fgb" fill="yellow" />
-    <rect id="dateFGB" class="fgb" fill="orangered" />
-    <rect id="timeFGB" class="fgb" fill="goldenrod" />
+    <rect id="fgb1" class="fgb bg1" />
+    <rect id="fgb2" class="fgb bg2" />
+    <rect id="fgb3" class="fgb bg3" />
+    <rect id="fgb4" class="fgb bg4" />
+    <rect id="fgb5" class="fgb bg5" />
+    <rect id="fgb6" class="fgb bg6" />
+    <rect id="fgb7" class="fgb bg7" />
   </svg>
 
   <svg class="container">
-    <text id="battery" class="bt" y="32">Loading ...............................</text>
-    <text id="steps" class="bt">Loading ...............................</text>
-    <text id="heartrate" class="bt">Loading ...............................</text>
-    <text id="sleep" class="bt">Loading ...............................</text>
-    <text id="weather" class="bt">Loading ...............................</text>
-    <text id="date" class="bt">Loading ...............................</text>
-    <text id="time" class="bt">Loading ...............................</text>
+    <text id="bt1" class="bt" y="32">Loading ...............................</text>
+    <text id="bt2" class="bt">Loading ...............................</text>
+    <text id="bt3" class="bt">Loading ...............................</text>
+    <text id="bt4" class="bt">Loading ...............................</text>
+    <text id="bt5" class="bt">Loading ...............................</text>
+    <text id="bt6" class="bt">Loading ...............................</text>
+    <text id="bt7" class="bt">Loading ...............................</text>
   </svg>
+
+  <svg class="container">
+    <image id="ic1" class="ic" href="icons/stat_am_open_32px.png" y="9"/>
+    <image id="ic2" class="ic" href="icons/stat_steps_open_32px.png" />
+    <image id="ic3" class="ic" href="icons/stat_hr_open_32px.png" />
+    <image id="ic4" class="ic" href="icons/Moon svg vector icon-32px.png" />
+    <image id="ic5" class="ic" href="icons/Weather svg vector icon-32px.png" />
+    <image id="ic6" class="ic" href="icons/Calendar svg vector icon-32px.png" />
+    <image id="ic7" class="ic" href="icons/Clock svg vector icon-32px.png" />
+  </svg>
+
 
 </svg>
