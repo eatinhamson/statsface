@@ -1,15 +1,20 @@
 <svg class="screen">
 
+
+
+<!-- FOREGROUND BARS -->
   <svg class="container">
-    <rect class="bgb bg1"/>
-    <rect class="bgb bg2"/>
-    <rect class="bgb bg3"/>
-    <rect class="bgb bg4"/>
-    <rect class="bgb bg5"/>
-    <rect class="bgb bg6"/>
-    <rect class="bgb bg7"/>
+    <rect class="bgb bg1" />
+    <rect class="bgb bg2" />
+    <rect class="bgb bg3" />
+    <rect class="bgb bg4" />
+    <rect class="bgb bg5" />
+    <rect class="bgb bg6" />
+    <rect class="bgb bg7" />
   </svg>
 
+
+<!-- BACKGROUND BARS -->
   <svg class="container">
     <rect id="fgb1" class="fgb bg1" />
     <rect id="fgb2" class="fgb bg2" />
@@ -18,6 +23,26 @@
     <rect id="fgb5" class="fgb bg5" />
     <rect id="fgb6" class="fgb bg6" />
     <rect id="fgb7" class="fgb bg7" />
+  </svg>
+
+
+
+<!-- OVERLAY BARS -->
+  <svg class="container">
+    <rect id="resting" class="hrzb" x="8"/>
+    <rect id="fat burn" class="hrzb" />
+    <rect id="cardio" class="hrzb" />
+    <rect id="peak" class="hrzb" />
+  </svg>
+
+  <svg class="container">
+    <rect id="light" class="sb"  x="8" />
+    <rect id="rem" class="sb" />
+    <rect id="deep" class="sb" />
+  </svg>
+
+  <svg class="container">
+    <rect id="sync" class="tss"  x="8" />
   </svg>
 
   <svg class="container">
