@@ -42,7 +42,7 @@
 
 
 .hrzb {
-  fill: white;
+  fill: #660208;
   opacity: 0.4;
   width: 25; 
   height: 10; 
@@ -68,7 +68,7 @@
 }
 
 .sb {
-  fill: black;
+  fill: #182113;
   opacity: 0.2;
   width: 25; 
   height: 10; 
@@ -90,7 +90,7 @@
 }
 
 .tss {
-  fill: white;
+  fill: #B1F2F6;
   opacity: 0.4;
   width: 220; 
   height: 10; 
@@ -98,35 +98,47 @@
   y: 8; 
 }
 
+
 /* 
 color palette inspiration
 https://coolors.co/app/247ba0-70c1b3-b2dbbf-f3ffbd-ff1654 
 */
 
+
 .bg1 {
-  fill: #247BA0
+  fill: #247BA0;
+  /*#B1F2F6*/
 }
 
 .bg2 {
   fill: #70C1B3
+  /*#B5F9F7*/
 }
 
 .bg3 {
-  fill: #B2DBBF
+  fill: #FF1654
+  /*
+  #FFA6BD - light
+  #660208 - Dark
+  */
 }
 
 .bg4 {
   fill: #F3FFBD
+  /*#182113*/
 }
 
 .bg5 {
-  fill: #FF1654
+  fill: #B2DBBF
+  /*#DCFBE8*/
 }
 
 .bg6 {
   fill: #97C170
+  /*#DAF9B0*/
 }
 
 .bg7 {
   fill: #FFB73D
+  /*#FFEB71*/
 }

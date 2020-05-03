@@ -12,7 +12,7 @@ import clock from "clock";
 
 localStorage.setItem("myKey", "myValue");
 console.log(localStorage.getItem("myKey"));
-
+localStorage.clear()
 
 Syntax
 setInterval(function, milliseconds, param1, param2, ...)
@@ -25,11 +25,17 @@ param1, param2, ... 	Optional. Additional parameters to pass to the function (No
 
 */
 
-asap.cancel() // Cancels all queued messages. Call this function on startup to limit messages to a single session.
+let oneMin = 60000
+let fiveMins = 300000
+let fifteenMins = 900000
 
-restoreSettings() //get oauth token from settings
+sendWeather()
+sendSleep()
 
+setInterval(getGeo, fiveMins)
 
+setInterval(fetchDailyWeather, fifteenMins)
+setInterval(fetchTodaysSleepData, fifteenMins)
 
 asap.onmessage = message => {
 
@@ -60,15 +66,6 @@ asap.onmessage = message => {
   }
 }
 
-const fiveMins = 300000
-const fifteenMins = 900000
-
-setInterval(getGeo, fiveMins)
-setInterval(fetchDailyWeather, fiveMins)
-const getSleep = setInterval(fetchTodaysSleepData, fiveMins)
-
-
-
 
 // GEOLOCATION --------------------------------
 function getGeo(){
@@ -87,6 +84,8 @@ function locationSuccess(position) {
 function locationError(error) {
   console.log("Error: " + error.code, "Message: " + error.message);
 }
+
+
 
 // DAILY WEATHER ---------------------------------------------------------
 function fetchDailyWeather(){
@@ -150,14 +149,11 @@ function sendWeather() {
 
 
 
+function fetchTodaysSleepData() {
 
-function fetchTodaysSleepData()  {
+  console.log("fetchTodaysSleepData")
 
-    const accessToken = localStorage.getItem("accessToken");
-
-    if (!accessToken){
-      restoreSettings()
-    }
+    let accessToken = localStorage.getItem("accessToken");
 
     let date = new Date();
     let todayDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; //YYYY-MM-DD
@@ -178,22 +174,19 @@ function fetchTodaysSleepData()  {
     })
     .then((j) =>{
 
-      localStorage.setItem("totalMinutesAsleep", sleepData.totalMinutesAsleep);
+      localStorage.setItem("totalMinutesAsleep", j.summary.totalMinutesAsleep);
+      localStorage.setItem("totalSleepRecords", j.summary.totalSleepRecords);
 
       var i;
-      for (i = 0; i < 5; i++) {
+      for (i = 0; i < j.summary.totalSleepRecords ; i++) {
         if (j.sleep[i]){
-
-            localStorage.setItem("deepMins", sleepData.deepMins);
-            localStorage.setItem("lightMins", sleepData.lightMins);
-            localStorage.setItem("remMins", sleepData.remMins);
-            localStorage.setItem("wakeMins", sleepData.wakeMins);
-
-        }else{
-          clearInterval(getSleep);
-          break
+            localStorage.setItem("deepMins", j.sleep[i].levels.summary.deep.minutes);
+            localStorage.setItem("lightMins", j.sleep[i].levels.summary.light.minutes);
+            localStorage.setItem("remMins", j.sleep[i].levels.summary.rem.minutes);
+            localStorage.setItem("wakeMins", j.sleep[i].levels.summary.wake.minutes);
         }
       } 
+      sendSleep()
     })
     .catch(err => console.log('[FETCH]: - ' + err));
 }
@@ -211,13 +204,52 @@ function sendSleep() {
 
 }
 
+// refresh oauth token
+
+function fetchRefreshToken(){
+
+  console.log("fetchRefreshToken")
+
+  let refreshToken = localStorage.getItem("refreshToken");
+
+  fetch(`https://api.fitbit.com/oauth2/token/grant_type=refresh_token&refresh_token=${refreshToken}`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Basic MjJCRzdKOmExZmRiMTQ4ZDJkYzc5MWQ4MTU5YjIwMDViNDg5OWI5`
+    }
+  })
+  .then((response)=>{
+      if(response.ok){
+          return response.json();
+      }else{
+          throw new Error('fetchRefreshToken failed - Bad HTTP!')
+      }
+  })
+  .then((j) =>{
+  
+      localStorage.setItem("accessToken", j.access_token);
+      localStorage.setItem("refreshToken", j.refresh_token);
+
+      console.log(j.access_token + " : " + j.refresh_token)
+
+  })
+  .catch(err => console.log('[FETCH]: ' + err));
+}
+
+
+
+
 
   // A user changes Settings
   settingsStorage.onchange = evt => {
     if (evt.key === "oauth") {
       // Settings page sent us an oAuth token
       let data = JSON.parse(evt.newValue);
+
       localStorage.setItem("accessToken", data.access_token);
+      localStorage.setItem("refreshToken", data.refresh_token);
+
+      fetchRefreshToken()
     }
   };
   
@@ -228,16 +260,16 @@ function sendSleep() {
       if (key && key === "oauth") {
         // We already have an oauth token
         let data = JSON.parse(settingsStorage.getItem(key))
+
         localStorage.setItem("accessToken", data.access_token);
+        localStorage.setItem("refreshToken", data.refresh_token);
 
-        if (!localStorage.getItem("totalMinutesAsleep")){ //check to see if there is sleep data
-          fetchTodaysSleepData() //if not get it
-        }
-
+        fetchRefreshToken()
       }
     }
   }
   
+
 //Get calendar events
 function getCalendarEvents () {
   let start = new Date()

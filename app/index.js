@@ -9,9 +9,12 @@ import asap from "fitbit-asap/app";
 import * as util from "../common/utils";
 import { display } from "display";
 
-let ini = 0
-let syncCount =0
-let secsSinceMidnight= 0
+/*
+on battery bar
+  time since last communication from companion
+
+*/
+
 
 let batteryText= document.getElementById("bt1")
 let batteryBar = document.getElementById("fgb1")
@@ -40,12 +43,26 @@ const deviceWidth = device.screen.width;
 
 asap.cancel() // Cancels all queued messages. Call this function on startup to limit messages to a single session.
 
+asap.send("sleep")
+asap.send("weather")
+
+asap.onmessage = message => {
+
+  console.log(JSON.stringify(message))
+
+  if (message.currentTemp){ // if temp is reported
+    updateWeather(message)
+  }
+
+  if (message.totalMinutesAsleep){ // if toal slept mins is reported
+    updateSleep(message)
+  }
+}
+
 
 // CLOCK ------------------------------------------------------------------
 clock.granularity = 'seconds'; // seconds, minutes, hours
 clock.ontick = function(evt) { // do the following on every tick
-  
-  ini+=1
 
   let hrs = evt.date.getHours()
   let mins= evt.date.getMinutes()
@@ -71,64 +88,27 @@ clock.ontick = function(evt) { // do the following on every tick
   updateSteps()
   updateHeartRate()
   updateSync()
-  
-  if (ini % 5 == 0 ){ // every 5 seconds after initalization
-    // updateThese([updateHeartRate], 3000); // perform each function, in order, with a timeout of 10 miliseconds for each function to complete
+  updateBattery()
+  updateDate()
 
-  }  
-
-  if (ini % 30 == 0) { // every 30 seonds after initalization
-
-    updateBattery()
-    updateDate()
-  
-  }
-
-  if (ini % 900 == 0) { // every 5 mins after initialization
-    updateWeather()
-    updateSleep()
-    updatedAgenda()
-  }
-
-  if ((hrs = 0) & (mins = 0) & (secs= 0)){ //at midnight 
-
-  }
 }
 
-asap.onmessage = message => {
 
-  console.log(JSON.stringify(message))
+function updateSync() {  
 
-  updateSync(message) //update sync time
+  let date = new Date();
+  let lastSyncTime =(device.lastSyncTime);
 
-  if (message.currentTemp){ // if temp is reported
-    updateWeather(message)
+  let timeSinceLastSync = (date - lastSyncTime)
+
+  let sbPerc = (timeSinceLastSync || 0) * 100 / 1800000;    // fifteen mins in ms
+  let syncBarWidth = (sbPerc / 100) * deviceWidth;
+
+  if (syncBarWidth > (deviceWidth - 2)) {  //do not allow bar to flow past 2 pixels from the width of the screen
+    syncBarWidth = 298
   }
 
-  if (message.totalMinutesAsleep){ // if toal slept mins is reported
-    updateSleep(message)
-  }
-}
-
-function updatedAgenda (incomingMessage) {
-  if (incomingMessage){
-    syncCount = 0
-  }else{
-    asap.send("agenda")
-  }
-}
-
-function updateSync(incomingMessage){
-    if (incomingMessage){
-      syncCount = 0
-    }
-
-    let sbPerc = (syncCount || 0) * 100 / 300;    //seonds in 5 mins
-    let syncBarWidth = (sbPerc / 100) * deviceWidth;
-  
-    syncBar.width=syncBarWidth
-    syncCount += 1
-
+  syncBar.width=syncBarWidth
 }
 
 
