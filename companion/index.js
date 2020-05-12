@@ -25,12 +25,11 @@ param1, param2, ... 	Optional. Additional parameters to pass to the function (No
 
 */
 
-let oneMin = 60000
-let fiveMins = 300000
-let fifteenMins = 900000
+asap.cancel()
 
-sendWeather()
-sendSleep()
+var oneMin = 60000
+var fiveMins = 300000
+var fifteenMins = 900000
 
 setInterval(getGeo, fiveMins)
 
@@ -94,12 +93,12 @@ function fetchDailyWeather(){
       getGeo() //if not, get it
     }else{
 
-      let Latitude = (localStorage.getItem("Latitude"));
-      let Longitude = (localStorage.getItem("Longitude"));
+      var Latitude = (localStorage.getItem("Latitude"));
+      var Longitude = (localStorage.getItem("Longitude"));
   
-      let darksky = 'https://api.darksky.net/forecast/';
-      let key = 'e09fb7a5c4859b3cdd54879e1b49b3c2';
-      let uri = darksky + key + '/' + Latitude +','+ Longitude;
+      var darksky = 'https://api.darksky.net/forecast/';
+      var key = 'e09fb7a5c4859b3cdd54879e1b49b3c2';
+      var uri = darksky + key + '/' + Latitude +','+ Longitude;
       uri = uri.concat('?units=us&');
   
       // units - ca, si, us, uk
@@ -132,17 +131,22 @@ function fetchDailyWeather(){
 
 function sendWeather() {
   
-  var weatherArray = {}; // create weather object
+  var weatherData = {}; // create weather object\\ 
+  
+  var date = new Date();
+  var secsSinceMidnight = (date -new Date().setHours(0,0,0,0)) / 1000;
+  weatherData.timeStamp = secsSinceMidnight
 
-  weatherArray.currentTemp= (localStorage.getItem("currentTemp"));  // assign saved weather values
-  weatherArray.currentSummary= (localStorage.getItem("currentSummary"));
-  weatherArray.temperatureHigh= (localStorage.getItem("temperatureHigh"));
-  weatherArray.temperatureHighTime= (localStorage.getItem("temperatureLow"));
-  weatherArray.temperatureLow= (localStorage.getItem("temperatureLow"));
-  weatherArray.sunriseTime= (localStorage.getItem("sunriseTime"));
-  weatherArray.sunsetTime= (localStorage.getItem("sunsetTime"));
+  weatherData.currentTemp= (localStorage.getItem("currentTemp"));  // assign saved weather values
+  weatherData.currentSummary= (localStorage.getItem("currentSummary"));
+  weatherData.temperatureHigh= (localStorage.getItem("temperatureHigh"));
+  weatherData.temperatureHighTime= (localStorage.getItem("temperatureLow"));
+  weatherData.temperatureLow= (localStorage.getItem("temperatureLow"));
+  weatherData.sunriseTime= (localStorage.getItem("sunriseTime"));
+  weatherData.sunsetTime= (localStorage.getItem("sunsetTime"));
 
-  asap.send(weatherArray) // send back
+  console.log("sending weatherData")
+  asap.send(weatherData,1000) // send back
 
 }
 
@@ -153,10 +157,10 @@ function fetchTodaysSleepData() {
 
   console.log("fetchTodaysSleepData")
 
-    let accessToken = localStorage.getItem("accessToken");
+    var accessToken = localStorage.getItem("accessToken");
 
-    let date = new Date();
-    let todayDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; //YYYY-MM-DD
+    var date = new Date();
+    var todayDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; //YYYY-MM-DD
   
     // Sleep API docs - https://dev.fitbit.com/reference/web-api/sleep/
     fetch(`https://api.fitbit.com/1.2/user/-/sleep/date/${todayDate}.json`, {
@@ -194,13 +198,18 @@ function fetchTodaysSleepData() {
 function sendSleep() {
   var sleepData = {};  //create sleepData object
 
+  var date = new Date();
+  var secsSinceMidnight = (date -new Date().setHours(0,0,0,0)) / 1000;
+  sleepData.timeStamp = secsSinceMidnight
+
   sleepData.totalMinutesAsleep = (localStorage.getItem("totalMinutesAsleep"));
   sleepData.deepMins = localStorage.getItem("deepMins");
   sleepData.lightMins = localStorage.getItem("lightMins");
   sleepData.remMins = localStorage.getItem("remMins");
   sleepData.wakeMins = localStorage.getItem("wakeMins");
 
-  asap.send(sleepData)
+  console.log("sending sleepData")
+  asap.send(sleepData,1000)
 
 }
 
@@ -210,7 +219,7 @@ function fetchRefreshToken(){
 
   console.log("fetchRefreshToken")
 
-  let refreshToken = localStorage.getItem("refreshToken");
+  var refreshToken = localStorage.getItem("refreshToken");
 
   fetch(`https://api.fitbit.com/oauth2/token/grant_type=refresh_token&refresh_token=${refreshToken}`, {
     method: "POST",
@@ -244,27 +253,27 @@ function fetchRefreshToken(){
   settingsStorage.onchange = evt => {
     if (evt.key === "oauth") {
       // Settings page sent us an oAuth token
-      let data = JSON.parse(evt.newValue);
+      var data = JSON.parse(evt.newValue);
 
       localStorage.setItem("accessToken", data.access_token);
       localStorage.setItem("refreshToken", data.refresh_token);
 
-      fetchRefreshToken()
+      fetchTodaysSleepData()
     }
   };
   
   // Restore previously saved settings and send to the device
   function restoreSettings() {
-    for (let index = 0; index < settingsStorage.length; index++) {
-      let key = settingsStorage.key(index);
+    for (var index = 0; index < settingsStorage.length; index++) {
+      var key = settingsStorage.key(index);
       if (key && key === "oauth") {
         // We already have an oauth token
-        let data = JSON.parse(settingsStorage.getItem(key))
+        var data = JSON.parse(settingsStorage.getItem(key))
 
         localStorage.setItem("accessToken", data.access_token);
         localStorage.setItem("refreshToken", data.refresh_token);
-
-        fetchRefreshToken()
+        
+        fetchTodaysSleepData()
       }
     }
   }
@@ -272,12 +281,12 @@ function fetchRefreshToken(){
 
 //Get calendar events
 function getCalendarEvents () {
-  let start = new Date()
+  var start = new Date()
   start.setHours(0, 0, 0, 0)
-  let end = new Date()
+  var end = new Date()
   end.setHours(23, 59, 59, 999)
   
-  let eventsQuery = { startDate: start, endDate: end }
+  var eventsQuery = { startDate: start, endDate: end }
   
   calendars.searchEvents(eventsQuery).then(function() {
      todayEvents.forEach(event => {

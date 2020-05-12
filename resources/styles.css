@@ -42,8 +42,8 @@
 
 
 .hrzb {
-  fill: #660208;
-  opacity: 0.4;
+  fill: #FFA6BD;
+  opacity: 0.5;
   width: 25; 
   height: 10; 
   x: $+2; 
@@ -76,7 +76,6 @@
   y: 130; 
 }
 
-
 #deep{
   width: 32%;
 }
@@ -94,10 +93,18 @@
   opacity: 0.4;
   width: 220; 
   height: 10; 
-  x: $+2; 
+  x: 8; 
   y: 8; 
 }
 
+.ccb {
+  fill: #B1F2F6;
+  opacity: 0.4;
+  width: 220; 
+  height: 10;
+  x: 8; 
+  y: $+2; 
+}
 
 /* 
 color palette inspiration

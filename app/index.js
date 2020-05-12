@@ -9,53 +9,68 @@ import asap from "fitbit-asap/app";
 import * as util from "../common/utils";
 import { display } from "display";
 
-/*
-on battery bar
-  time since last communication from companion
 
-*/
+var batteryText= document.getElementById("bt1")
+var batteryBar = document.getElementById("fgb1")
 
+var stepsText = document.getElementById("bt2");
+var stepsBar = document.getElementById("fgb2")
 
-let batteryText= document.getElementById("bt1")
-let batteryBar = document.getElementById("fgb1")
+var heartrateText = document.getElementById("bt3");
+var heartrateBar = document.getElementById("fgb3")
 
-let stepsText = document.getElementById("bt2");
-let stepsBar = document.getElementById("fgb2")
+var sleepText = document.getElementById("bt4");
+var sleepBar = document.getElementById("fgb4")
 
-let heartrateText = document.getElementById("bt3");
-let heartrateBar = document.getElementById("fgb3")
+var weatherText = document.getElementById("bt5");
+var weatherBar = document.getElementById("fgb5")
 
-let sleepText = document.getElementById("bt4");
-let sleepBar = document.getElementById("fgb4")
+var dateText = document.getElementById("bt6");
+var dateBar = document.getElementById("fgb6")
 
-let weatherText = document.getElementById("bt5");
-let weatherBar = document.getElementById("fgb5")
+var timeText = document.getElementById("bt7");
+var timeBar = document.getElementById("fgb7")
 
-let dateText = document.getElementById("bt6");
-let dateBar = document.getElementById("fgb6")
+var syncBar = document.getElementById("sync");
 
-let timeText = document.getElementById("bt7");
-let timeBar = document.getElementById("fgb7")
+var compComTimeBar = document.getElementById("compCom");
 
-let syncBar = document.getElementById("sync");
+var asapTimeStamp = 0
+var deviceWidth = device.screen.width;
 
-const deviceWidth = device.screen.width;
-
-asap.cancel() // Cancels all queued messages. Call this function on startup to limit messages to a single session.
-
-asap.send("sleep")
-asap.send("weather")
+var weatherData = {}; // create weather object
+var sleepData = {};  //create sleepData object
 
 asap.onmessage = message => {
 
   console.log(JSON.stringify(message))
 
+  if (message.timeStamp){
+    asapTimeStamp = message.timeStamp
+  }
+
   if (message.currentTemp){ // if temp is reported
-    updateWeather(message)
+
+    weatherData.currentTemp= message.currentTemp
+    weatherData.currentSummary= message.currentSummary
+    weatherData.temperatureHigh= message.temperatureHigh
+    weatherData.temperatureHighTime= message.temperatureHighTime
+    weatherData.temperatureLow= message.temperatureLow
+    weatherData.sunriseTime= message.sunriseTime
+    weatherData.sunsetTime= message.sunsetTime
+
+    updateWeather(weatherData)
   }
 
   if (message.totalMinutesAsleep){ // if toal slept mins is reported
-    updateSleep(message)
+
+    sleepData.totalMinutesAsleep = message.totalMinutesAsleep
+    sleepData.deepMins = message.deepMins
+    sleepData.lightMins = message.lightMins
+    sleepData.remMins = message.remMins
+    sleepData.wakeMins = message.wakeMins
+
+    updateSleep(sleepData)
   }
 }
 
@@ -64,11 +79,11 @@ asap.onmessage = message => {
 clock.granularity = 'seconds'; // seconds, minutes, hours
 clock.ontick = function(evt) { // do the following on every tick
 
-  let hrs = evt.date.getHours()
-  let mins= evt.date.getMinutes()
-  let secs= evt.date.getSeconds()
+  var hrs = evt.date.getHours()
+  var mins= evt.date.getMinutes()
+  var secs= evt.date.getSeconds()
 
-  let secsSinceMidnight = (hrs * 3600) + (mins * 60) + secs
+  var secsSinceMidnight = (hrs * 3600) + (mins * 60) + secs
   const timePercentage = (secsSinceMidnight) * 100 / 86400;
   const stepsBarWidth = (timePercentage / 100) * deviceWidth;
   
@@ -90,45 +105,71 @@ clock.ontick = function(evt) { // do the following on every tick
   updateSync()
   updateBattery()
   updateDate()
+  updateCompComBar()
+
+  updateSleep()
+  updateWeather()
 
 }
 
 
 function updateSync() {  
 
-  let date = new Date();
-  let lastSyncTime =(device.lastSyncTime);
+  var date = new Date();
+  var lastSyncTime =(device.lastSyncTime);
 
-  let timeSinceLastSync = (date - lastSyncTime)
+  var timeSinceLastSync = (date - lastSyncTime)
 
-  let sbPerc = (timeSinceLastSync || 0) * 100 / 1800000;    // fifteen mins in ms
-  let syncBarWidth = (sbPerc / 100) * deviceWidth;
+  var sbPerc = (timeSinceLastSync || 0) * 100 / 900000;    // 15 mins in ms
+  var syncBarWidth = (sbPerc / 100) * deviceWidth;
 
   if (syncBarWidth > (deviceWidth - 2)) {  //do not allow bar to flow past 2 pixels from the width of the screen
-    syncBarWidth = 298
+    syncBarWidth = 284
   }
 
   syncBar.width=syncBarWidth
 }
 
 
+function updateCompComBar() {  
+
+  if (asapTimeStamp){
+
+    var date = new Date();
+    var secsSinceMidnight = (date -new Date().setHours(0,0,0,0)) / 1000;
+
+    var timeSinceLasCompCom = (secsSinceMidnight - asapTimeStamp)
+  
+    var cbPerc = (timeSinceLasCompCom || 0) * 100 / 900;    // fifteen mins in seconds
+    var compComTimeBarWidth = (cbPerc / 100) * deviceWidth;
+  
+    if (compComTimeBarWidth > (deviceWidth - 12)) {  //do not allow bar to flow past 2 pixels from the width of the screen
+      compComTimeBarWidth = (deviceWidth - 12)
+    }
+    compComTimeBar.width=compComTimeBarWidth
+  }else{
+    compComTimeBar.width=0
+  }
+}
+
+
 function updateDate(){   // UPDATE DATE --------------------------------------------------
 
-  let date = new Date();
-  let day = date.getDay()
+  var date = new Date();
+  var day = date.getDay()
 
-  let secsSinceMidnight = (date -new Date().setHours(0,0,0,0)) / 1000;
+  var secsSinceMidnight = (date -new Date().setHours(0,0,0,0)) / 1000;
 
-  let pastDaysInSecs = (day * 86400);  // day of week times seonds in a day
-  let totalSecsPassedWeek = secsSinceMidnight + pastDaysInSecs
-  const datePercentage = (totalSecsPassedWeek) * 100 / 604800;    //seonds already passed vs seconds in a week
-  const dateBarWidth = (datePercentage / 100) * deviceWidth;
+  var pastDaysInSecs = (day * 86400);  // day of week times seonds in a day
+  var totalSecsPassedWeek = secsSinceMidnight + pastDaysInSecs
+  var datePercentage = (totalSecsPassedWeek) * 100 / 604800;    //seonds already passed vs seconds in a week
+  var dateBarWidth = (datePercentage / 100) * deviceWidth;
   dateBar.width = dateBarWidth
 
-  let dayName = nameOfDay(day);
-  let monthName = nameOfMonth(date.getMonth());
+  var dayName = nameOfDay(day);
+  var monthName = nameOfMonth(date.getMonth());
  
-  let day = ("0" + date.getDate()).slice(-2);
+  var day = ("0" + date.getDate()).slice(-2);
 
   dateText.text = `${dayName} ${day} ${monthName}`;
 
@@ -158,7 +199,7 @@ function updateHeartRate(){      // UPDATE HEARTRATE ---------------------------
       hrm.addEventListener("reading", () => { // add a listener to it
 
           heartrateText.text = (`${hrm.heartRate}`);
-          let heartrateBarWidth = (hrm.heartRate / 200) * deviceWidth; //220 is max heart rate, but i never get there so 180 makes the bar move more which is more interesting
+          var heartrateBarWidth = (hrm.heartRate / 200) * deviceWidth; //220 is max heart rate, but i never get there so 180 makes the bar move more which is more interesting
           heartrateBar.width = heartrateBarWidth;
 
       });
@@ -173,9 +214,9 @@ function updateHeartRate(){      // UPDATE HEARTRATE ---------------------------
 
 function updateBattery(){       // UPDATE BATTERY ------------------------------------------------------------------
 
-  let level = battery.chargeLevel;
-  let batteryPercentage = Math.floor(level);
-  let batterBarWidth = Math.floor(deviceWidth*(batteryPercentage/100));
+  var level = battery.chargeLevel;
+  var batteryPercentage = Math.floor(level);
+  var batterBarWidth = Math.floor(deviceWidth*(batteryPercentage/100));
 
   batteryText.text= batteryPercentage + "%"
   batteryBar.width = batterBarWidth;
@@ -183,70 +224,56 @@ function updateBattery(){       // UPDATE BATTERY ------------------------------
 }
 
 
-function updateWeather(incomingMessage){
-  if (!incomingMessage){ //if not respoding to an incoming message, send an outgoing message
+function updateWeather(){
+  if (!weatherData.currentTemp){ //if not respoding to an incoming message, send an outgoing message
     asap.send("weather")
   }else{
 
-    let currentlyTemperature    = Math.round(incomingMessage.currentTemp)
-    let currentlySummary        = incomingMessage.currentSummary
-    let dailyTemperatureHigh    = Math.round(incomingMessage.temperatureHigh)
-    let dailyTemperatureHighTime= incomingMessage.temperatureHighTime
-    let dailyTemperatureLow     = Math.round(incomingMessage.temperatureLow)
-    let dailySunriseTime        = incomingMessage.sunriseTime
-    let dailySunsetTime         = incomingMessage.sunsetTime
-
-    let dailyTempSpread = dailyTemperatureHigh - dailyTemperatureLow
-    let currentTempDiff = currentlyTemperature - dailyTemperatureLow
+    var dailyTempSpread = weatherData.dailyTemperatureHigh - weatherData.dailyTemperatureLow
+    var currentTempDiff = weatherData.currentlyTemperature - weatherData.dailyTemperatureLow
 
     // if current temp is lower than daily low or of high is hi
 
-    let cTP = (currentTempDiff|| 0) * 100 / dailyTempSpread;
-    let weatherBarWidth = (cTP / 100) * deviceWidth;
+    var cTP = (currentTempDiff|| 0) * 100 / dailyTempSpread;
+    var weatherBarWidth = (cTP / 100) * deviceWidth;
 
     if (weatherBarWidth < 60) {
       weatherBarWidth = 60
     }
 
-    weatherText.text = (`${currentlyTemperature} ${currentlySummary}`)
+    weatherText.text = (`${weatherData.currentTemp} ${weatherData.currentSummary}`)
     weatherBar.width = weatherBarWidth
   }
 }
 
 
-function updateSleep(incomingMessage) {
-  if (!incomingMessage){ //if not respoding to an incoming message, send an outgoing message
+function updateSleep() {
+  if (!sleepData.totalMinutesAsleep){ //if not respoding to an incoming message, send an outgoing message
     asap.send("sleep")
   }else{
-
-    let totalMinutesAsleep = (incomingMessage.totalMinutesAsleep)
-    let deepMins = (incomingMessage.deepMins)
-    let lightMins = (incomingMessage.lightMins)
-    let remMins = (incomingMessage.remMins)
-    let wakeMins = (incomingMessage.wakeMins)
   
-    let deepSleepBar = document.getElementById('deep')
-    let lightSleepBar = document.getElementById('light')
-    let remSleepBar = document.getElementById('rem')
+    var deepSleepBar = document.getElementById('deep')
+    var lightSleepBar = document.getElementById('light')
+    var remSleepBar = document.getElementById('rem')
 
-    let lsbP= Math.round((lightMins || 0) * 100 / totalMinutesAsleep);
-    let lightSleepBarWidth = (lsbP / 100) * deviceWidth;
+    var lsbP= Math.round((sleepData.lightMins || 0) * 100 / sleepData.totalMinutesAsleep);
+    var lightSleepBarWidth = (lsbP / 100) * deviceWidth;
 
-    let dsbP= Math.round((deepMins || 0) * 100 / totalMinutesAsleep);
-    let deepSleepBarWidth = (dsbP / 100) * deviceWidth;
+    var dsbP= Math.round((sleepData.deepMins || 0) * 100 / sleepData.totalMinutesAsleep);
+    var deepSleepBarWidth = (dsbP / 100) * deviceWidth;
 
-    let rsbP= Math.round((remMins || 0) * 100 / totalMinutesAsleep);
-    let remSleepBarWidth = (rsbP / 100) * deviceWidth;
+    var rsbP= Math.round((sleepData.remMins || 0) * 100 / sleepData.totalMinutesAsleep);
+    var remSleepBarWidth = (rsbP / 100) * deviceWidth;
 
-    let tmaP= Math.round((totalMinutesAsleep || 0) * 100 / 480);//480 mins = 8 hours, replace this with sleep goal
-    let sleepBarWidth = (tmaP / 100) * deviceWidth;
+    var tmaP= Math.round((sleepData.totalMinutesAsleep || 0) * 100 / 480);//480 mins = 8 hours, replace this with sleep goal
+    var sleepBarWidth = (tmaP / 100) * deviceWidth;
 
     lightSleepBar.width= lightSleepBarWidth - 5     // need ot shave 4 px off each bar so it doesnt overflow off screen, because i added margins between bars
     deepSleepBar.width= deepSleepBarWidth - 5
     remSleepBar.width= remSleepBarWidth -5
     sleepBar.width = sleepBarWidth
 
-    let totalMinutesAsleep= convertMinsToHrsMins(totalMinutesAsleep)
+    var totalMinutesAsleep= convertMinsToHrsMins(sleepData.totalMinutesAsleep)
     sleepText.text = (`${totalMinutesAsleep}`)
   }
 }

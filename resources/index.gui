@@ -43,6 +43,7 @@
 
   <svg class="container">
     <rect id="sync" class="tss"  x="8" />
+    <rect id="compCom" class="ccb"  x="8" />
   </svg>
 
   <svg class="container">
